@@ -6,7 +6,8 @@
     "storage",
     "activeTab",
     "background",
-    "microphone"
+    "microphone",
+    "offscreen"
   ],
   "host_permissions": [
     "http://localhost:5000/",

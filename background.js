@@ -12,29 +12,24 @@ chrome.runtime.onMessage.addListener(async (data, sender) => {
   });
 });
 
-// --- WebSocket client for interactive prompts ---
-let ws;
-function connectWebSocket() {
-  ws = new WebSocket('ws://localhost:5000/ws');
-
-  ws.onmessage = (event) => {
-    try {
-      const message = JSON.parse(event.data);
-      chrome.storage.local.set({ wsMessage: message }, () => {
-        chrome.action.openPopup();
-      });
-    } catch (e) {
-      console.error('Invalid WebSocket message', e);
-    }
-  };
-
-  ws.onclose = () => {
-    setTimeout(connectWebSocket, 1000);
-  };
-
-  ws.onerror = () => {
-    ws.close();
-  };
+// --- WebSocket handling via offscreen document ---
+async function ensureOffscreen() {
+  const exists = await chrome.offscreen.hasDocument?.();
+  if (!exists) {
+    await chrome.offscreen.createDocument({
+      url: 'offscreen.html',
+      reasons: ['DOM_PARSER'],
+      justification: 'Keep WebSocket connection alive'
+    });
+  }
 }
 
-connectWebSocket();
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.type === 'wsMessage') {
+    chrome.storage.local.set({ wsMessage: msg.data }, () => {
+      chrome.action.openPopup();
+    });
+  }
+});
+
+ensureOffscreen();
