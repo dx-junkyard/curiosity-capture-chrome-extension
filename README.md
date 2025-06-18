@@ -13,6 +13,9 @@
 - Analyzes page content and extracts keywords
 - Calculates scroll depth to estimate engagement
 - Optionally sends data to external APIs for analysis
+- Receives prompts from a local WebSocket server
+- Speaks the prompt aloud using the Web Speech API
+- Captures spoken replies with speech recognition
 
 ## 📦 Installation
 1. Clone this repository.
