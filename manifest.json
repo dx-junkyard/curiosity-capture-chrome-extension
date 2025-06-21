@@ -2,10 +2,23 @@
   "manifest_version": 3,
   "version": "1.0",
   "name": "Personal Interest Tracker",
-  "permissions": ["tabs", "storage", "activeTab", "scripting"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "background",
+    "microphone",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "http://localhost:8086/",
+    "http://localhost:5000/",
+    "ws://localhost:8086/"
+  ],
   "background": {
     "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
   },
   "content_scripts": [
     {
