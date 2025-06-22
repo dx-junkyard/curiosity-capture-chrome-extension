@@ -14,7 +14,7 @@
 - Calculates scroll depth to estimate engagement
 - Optionally sends data to external APIs for analysis
 - Receives prompts from a local WebSocket server
-- Speaks the prompt aloud using the Web Speech API
+- Automatically speaks the prompt aloud using the Web Speech API
 - Captures spoken replies with speech recognition
 
 ## 📦 Installation

@@ -5,22 +5,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const playBtn = document.getElementById('play');
   let messageText = '';
 
-  chrome.storage.local.get('wsMessage', ({ wsMessage }) => {
-    if (wsMessage && wsMessage.message) {
-      messageText = wsMessage.message;
-      messageDiv.textContent = messageText;
-    }
-  });
-
-  playBtn.addEventListener('click', () => {
+  function playMessage() {
     if (!messageText) return;
     const utterance = new SpeechSynthesisUtterance(messageText);
     utterance.lang = 'ja-JP';
     utterance.onend = () => {
       startSpeechRecognition();
+      chrome.storage.local.remove('wsMessage');
+      messageDiv.textContent = 'メッセージがありません';
+      messageText = '';
     };
     window.speechSynthesis.speak(utterance);
+  }
+
+  chrome.storage.local.get('wsMessage', ({ wsMessage }) => {
+    if (wsMessage && wsMessage.message) {
+      messageText = wsMessage.message;
+      messageDiv.textContent = messageText;
+      playMessage();
+    }
   });
+
+  playBtn.addEventListener('click', playMessage);
 });
 
 function startSpeechRecognition() {
