@@ -14,7 +14,7 @@
 - Calculates scroll depth to estimate engagement
 - Optionally sends data to external APIs for analysis
 - Receives prompts from a local WebSocket server
-- Speaks the prompt aloud using the Web Speech API
+- Plays VOICEVOX-generated audio prompts automatically
 - Captures spoken replies with speech recognition
 
 ## 📦 Installation
@@ -34,7 +34,23 @@
   "visit_duration_sec": 300,
   "scroll_depth": 0.8,
   "keywords": ["AI", "Deep Learning", "未来"],
-  "search_query": "生成AIの将来性"
+"search_query": "生成AIの将来性"
 }
 ```
+
+## 🖧 システム構成
+The project is composed of several services managed by **docker-compose**:
+
+- **ui**: the front-end user interface
+- **api**: FastAPI backend that receives browsing data and pushes messages
+- **voicevox**: text-to-speech engine used for all audio output
+- **db**: PostgreSQL database storing collected information
+- **rabbitmq**: message broker for background jobs
+
+Browsing data flows from the extension to the API, is stored in the database and processed. When the API sends a prompt, it generates audio using VOICEVOX and returns the text and Base64-encoded audio over WebSocket.
+
+Environment variables `VOICEVOX_URL`, `VOICEVOX_SPEAKER` and `VOICEVOX_SPEED` can be set in `.env`. Their defaults are `http://voicevox:50021`, `1` and `1.0` respectively.
+
+## ブラウジング情報の送信
+WebSocket messages now include an `audio` field containing the VOICEVOX-generated WAV data encoded as Base64. The Chrome extension decodes this string and plays the audio when the popup opens.
 
