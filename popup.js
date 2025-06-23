@@ -45,6 +45,8 @@ let recognition;
 let recognizing = false;
 let silenceTimer;
 let collectedTranscript = '';
+let recorder;
+let audioChunks = [];
 
 function resetSilenceTimer() {
   clearTimeout(silenceTimer);
@@ -54,21 +56,36 @@ function resetSilenceTimer() {
 }
 
 function processTranscript() {
-  if (collectedTranscript) {
-    console.log('Voice Input:', collectedTranscript);
-    const messageDiv = document.getElementById('message');
-    messageDiv.textContent = collectedTranscript;
-  }
   collectedTranscript = '';
 }
 
-function startSpeechRecognition() {
+async function startSpeechRecognition() {
   if (recognizing) return;
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     console.warn('SpeechRecognition API not supported');
     return;
   }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recorder = new MediaRecorder(stream);
+    audioChunks = [];
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        audioChunks.push(e.data);
+      }
+    };
+    recorder.onstop = () => {
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      sendAudioForTranscription(blob);
+      stream.getTracks().forEach((t) => t.stop());
+    };
+    recorder.start();
+  } catch (err) {
+    console.error('Could not start media recording', err);
+  }
+
   recognition = new SpeechRecognition();
   recognition.lang = 'ja-JP';
   recognition.continuous = true;
@@ -99,5 +116,26 @@ function startSpeechRecognition() {
 function stopSpeechRecognition() {
   if (recognizing && recognition) {
     recognition.stop();
+  }
+  if (recorder && recorder.state !== 'inactive') {
+    recorder.stop();
+  }
+}
+
+async function sendAudioForTranscription(blob) {
+  const formData = new FormData();
+  formData.append('file', blob, 'speech.webm');
+  try {
+    const resp = await fetch('http://localhost:8086/api/v1/transcribe', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await resp.json();
+    if (data.text) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = data.text;
+    }
+  } catch (e) {
+    console.error('Transcription request failed', e);
   }
 }

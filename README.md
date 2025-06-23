@@ -15,7 +15,8 @@
 - Optionally sends data to external APIs for analysis
 - Receives prompts from a local WebSocket server
 - Plays VOICEVOX-generated audio prompts automatically
-- Captures spoken replies with speech recognition
+- Captures spoken replies and sends the recording to a backend API for
+  Whisper-based transcription
 
 ## 📦 Installation
 1. Clone this repository.
