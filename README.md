@@ -17,6 +17,9 @@
 - Plays VOICEVOX-generated audio prompts automatically
 - Captures spoken replies and sends the recording to a backend API for
   Whisper-based transcription
+- Provides buttons to manually start or stop speech recognition
+- Automatically begins recording after a prompt is played and stops after
+  five seconds of silence
 
 ## 📦 Installation
 1. Clone this repository.
