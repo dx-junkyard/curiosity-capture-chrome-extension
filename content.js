@@ -1,5 +1,11 @@
 async function sendData(data) {
-  chrome.runtime.sendMessage(data);
+  try {
+    console.log('sending page data', data);
+    await chrome.runtime.sendMessage(data);
+    console.log('sendMessage succeeded');
+  } catch (err) {
+    console.error('failed to send message', chrome.runtime.lastError || err);
+  }
 }
 
 function extractMainContentByArea() {
