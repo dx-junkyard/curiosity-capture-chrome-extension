@@ -174,6 +174,7 @@ async function sendAudioForTranscription(blob) {
       method: 'POST',
       body: formData
     });
+    console.log('Transcription response status', resp.status);
     if (!resp.ok) {
       throw new Error(`HTTP ${resp.status}`);
     }
