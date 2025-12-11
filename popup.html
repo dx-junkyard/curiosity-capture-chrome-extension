@@ -1,15 +1,87 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-<meta charset="UTF-8" />
-<style>
-  body { font-family: Arial, sans-serif; min-width: 220px; padding: 10px; }
-  #message { margin-bottom: 10px; }
-</style>
+  <meta charset="utf-8">
+  <title>Curiosity Capture</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 15px;
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+    }
+    h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    #status-container {
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 5px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .hidden {
+      display: none !important;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #login-btn {
+      background-color: #06C755; /* LINE Green */
+      color: white;
+      font-weight: bold;
+    }
+    #login-btn:hover {
+      background-color: #05a546;
+    }
+    #logout-btn {
+      background-color: #e74c3c;
+      color: white;
+      margin-top: 10px;
+    }
+    #logout-btn:hover {
+      background-color: #c0392b;
+    }
+    .user-info {
+      font-size: 12px;
+      color: #666;
+      word-break: break-all;
+    }
+    .status-active {
+      color: #2ecc71;
+      font-weight: bold;
+    }
+    .status-inactive {
+      color: #95a5a6;
+    }
+  </style>
 </head>
 <body>
-  <div id="message">メッセージがありません</div>
-  <button id="play">再生する</button>
+  <h2>Curiosity Capture</h2>
+
+  <div id="status-container">
+    <div id="unauth-view">
+      <p class="status-inactive">Not tracking</p>
+      <button id="login-btn" class="btn">Log in with LINE</button>
+    </div>
+
+    <div id="auth-view" class="hidden">
+      <p class="status-active">● Tracking Active</p>
+      <p class="user-info">Logged in as:<br><span id="user-id-display"></span></p>
+      <button id="logout-btn" class="btn">Logout</button>
+    </div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
