@@ -9,11 +9,19 @@ const logoutBtn = document.getElementById('logout-btn');
 const unauthView = document.getElementById('unauth-view');
 const authView = document.getElementById('auth-view');
 const userIdDisplay = document.getElementById('user-id-display');
+const errorMessageDiv = document.createElement('div');
+errorMessageDiv.style.color = 'red';
+errorMessageDiv.style.fontSize = '12px';
+errorMessageDiv.style.marginTop = '10px';
 
 // Initialize UI
 document.addEventListener('DOMContentLoaded', () => {
   // Ensure elements exist before adding listeners (guard for partial load)
-  if(loginBtn) loginBtn.addEventListener('click', handleLogin);
+  if(loginBtn) {
+    loginBtn.addEventListener('click', handleLogin);
+    // Append error message container
+    loginBtn.parentNode.insertBefore(errorMessageDiv, loginBtn.nextSibling);
+  }
   if(logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 
   checkLoginStatus();
@@ -34,6 +42,7 @@ function showAuthenticated(userId) {
   if(unauthView) unauthView.classList.add('hidden');
   if(authView) authView.classList.remove('hidden');
   if(userIdDisplay) userIdDisplay.textContent = userId;
+  errorMessageDiv.textContent = '';
 }
 
 function showUnauthenticated() {
@@ -43,8 +52,12 @@ function showUnauthenticated() {
 }
 
 function handleLogin() {
+  errorMessageDiv.textContent = '';
   if (LINE_CHANNEL_ID === 'YOUR_CHANNEL_ID_HERE') {
-    alert('Please set your LINE_CHANNEL_ID in popup.js');
+    const msg = 'Please configure LINE_CHANNEL_ID in popup.js';
+    console.error(msg);
+    errorMessageDiv.textContent = msg;
+    // alert(msg); // Reduced alert usage for better UX
     return;
   }
 
@@ -69,7 +82,7 @@ function handleLogin() {
     async (responseUrl) => {
       if (chrome.runtime.lastError) {
         console.error('Auth flow error:', chrome.runtime.lastError);
-        alert('Login failed: ' + chrome.runtime.lastError.message);
+        errorMessageDiv.textContent = 'Login failed: ' + chrome.runtime.lastError.message;
         return;
       }
 
@@ -81,7 +94,7 @@ function handleLogin() {
           await exchangeCodeForUser(code, redirectUri);
         } else {
           console.error('No code found in response URL');
-          alert('Login failed: No authorization code received.');
+          errorMessageDiv.textContent = 'Login failed: No authorization code received.';
         }
       }
     }
@@ -118,7 +131,7 @@ async function exchangeCodeForUser(code, redirectUri) {
 
   } catch (error) {
     console.error('Exchange code error:', error);
-    alert('Failed to verify login with backend server.');
+    errorMessageDiv.textContent = 'Failed to verify login with backend server. Check if backend is running.';
   }
 }
 

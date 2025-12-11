@@ -7,7 +7,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const userId = result.user_id;
 
     if (!userId) {
-      console.log('User not logged in. Skipping capture.');
+      // User not logged in, silent fail is expected but we can log for debug
+      console.debug('User not logged in. Skipping capture for', message.url);
       return;
     }
 
@@ -31,13 +32,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (!response.ok) {
         console.error('Failed to send capture data:', response.status);
       } else {
-        console.log('Capture data sent successfully for user:', userId);
+        console.debug('Capture data sent successfully for user:', userId);
       }
     } catch (error) {
-      console.error('Error sending capture data:', error);
+      console.error('Error sending capture data (Backend might be down):', error);
     }
   });
 
   // Return true to indicate async response (though we aren't using sendResponse actively here, it's good practice)
   return true;
+});
+
+// Optional: Log when extension is installed/updated
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('Curiosity Capture Extension Installed');
 });
